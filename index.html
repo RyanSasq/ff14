@@ -196,7 +196,26 @@
     }
 
     function buildQuestions() {
-      return shuffle([...shuffle(PATTERNS), ...shuffle(PATTERNS).slice(0,2)]);
+      let result = shuffle([...shuffle(PATTERNS), ...shuffle(PATTERNS).slice(0,2)]);
+      // 2問連続で同じパターンが来ないように並び替え
+      for (let i = 1; i < result.length; i++) {
+        if (result[i] === result[i-1]) {
+          // 同じなら後ろから異なる要素を探して交換
+          let swapped = false;
+          for (let j = i+1; j < result.length; j++) {
+            if (result[j] !== result[i-1] && (j+1 >= result.length || result[j] !== result[i])) {
+              [result[i], result[j]] = [result[j], result[i]];
+              swapped = true;
+              break;
+            }
+          }
+          // 交換できなかった場合は前と入れ替え
+          if (!swapped && i >= 2 && result[i-2] !== result[i]) {
+            [result[i], result[i-2]] = [result[i-2], result[i]];
+          }
+        }
+      }
+      return result;
     }
 
     function getCorrectSlot(arrow) {

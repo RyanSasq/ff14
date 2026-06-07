@@ -21,6 +21,15 @@
     .screen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
     .screen.active { display: flex; }
 
+    /* カウントダウン画面 */
+    .countdown-box {
+      width: 460px; background: #1a2a3a; border: 1px solid #2a3f52;
+      border-radius: 12px; padding: 4rem 2rem; text-align: center;
+    }
+    .countdown-label { font-size: 16px; color: #8899aa; margin-bottom: 1rem; }
+    .countdown-num { font-size: 96px; font-weight: 500; color: #c8c0f0; line-height: 1; animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity:1; } 50% { transform: scale(1.15); opacity:0.8; } }
+
     /* タイトル画面 */
     .title-box {
       width: 460px; background: #1a2a3a; border: 1px solid #2a3f52;
@@ -184,6 +193,14 @@
     <button class="ranking-btn" onclick="showRanking()">ランキング 🏆</button>
   </div>
 
+  <!-- カウントダウン画面 -->
+  <div id="screen-countdown" class="screen">
+    <div class="countdown-box">
+      <div class="countdown-label">スタートまで</div>
+      <div class="countdown-num" id="countdown-num">3</div>
+    </div>
+  </div>
+
   <!-- クイズ画面 -->
   <div id="screen-quiz" class="screen">
     <div class="hud">
@@ -256,7 +273,7 @@
   <script>
     // ======================================================
     // ★ここを自分のJSONBin Secret Keyに書き換えてください★
-    const JSONBIN_API_KEY = '$2a$10$bqyYAUxYpb513D2505wcQ.nGJDxRIrhh0UricImvIOQJnIqDr.aEC';
+    const JSONBIN_API_KEY = 'YOUR_API_KEY';
     // ★ここを最初の実行後に発行されるBin IDに書き換えてください★
     // （初回実行時に自動作成されます。コンソールにIDが表示されます）
     let JSONBIN_BIN_ID = 'YOUR_BIN_ID';
@@ -293,21 +310,17 @@
       return a;
     }
 
-    // --- 問題生成（連続同一パターンなし） ---
+    // --- 問題生成（8問・被りなし・連続同一パターンなし） ---
     function buildQuestions() {
-      let result = shuffle([...shuffle(PATTERNS), ...shuffle(PATTERNS).slice(0,2)]);
+      let result = shuffle([...PATTERNS]); // 8問、被りなし
+      // 連続同一パターンが来ないよう並び替え
       for (let i = 1; i < result.length; i++) {
         if (result[i] === result[i-1]) {
-          let swapped = false;
           for (let j = i+1; j < result.length; j++) {
-            if (result[j] !== result[i-1] && (j+1 >= result.length || result[j] !== result[i])) {
+            if (result[j] !== result[i-1]) {
               [result[i], result[j]] = [result[j], result[i]];
-              swapped = true;
               break;
             }
-          }
-          if (!swapped && i >= 2 && result[i-2] !== result[i]) {
-            [result[i], result[i-2]] = [result[i-2], result[i]];
           }
         }
       }
@@ -329,8 +342,8 @@
     function loadQuestion() {
       resetSlots();
       const arrow = questions[current];
-      document.getElementById('q-label').textContent = `問題 ${current+1} / 10`;
-      document.getElementById('progress-fill').style.width = `${(current+1)*10}%`;
+      document.getElementById('q-label').textContent = `問題 ${current+1} / 8`;
+      document.getElementById('progress-fill').style.width = `${Math.round((current+1)/8*100)}%`;
       document.getElementById('arrows-display').textContent = arrow;
       document.getElementById('feedback').textContent = '';
       document.getElementById('feedback').className = 'feedback';
@@ -340,7 +353,7 @@
 
     function nextQuestion() {
       current++;
-      if (current >= 10) showResult();
+      if (current >= 8) showResult();
       else loadQuestion();
     }
 
@@ -349,10 +362,10 @@
       switchScreen('screen-result');
       const avg = times.reduce((a,b) => a+b, 0) / times.length;
       document.getElementById('result-name').textContent = selectedName;
-      document.getElementById('result-score').textContent = `${score} / 10`;
+      document.getElementById('result-score').textContent = `${score} / 8`;
       document.getElementById('result-avg').textContent = avg.toFixed(2);
       const msgs = ['もう少し練習しましょう！', 'いい調子です！', 'よくできました！', '完璧です！'];
-      document.getElementById('result-msg').textContent = msgs[score <= 4 ? 0 : score <= 6 ? 1 : score <= 9 ? 2 : 3];
+      document.getElementById('result-msg').textContent = msgs[score <= 3 ? 0 : score <= 5 ? 1 : score <= 7 ? 2 : 3];
 
       document.getElementById('saving-msg').textContent = '記録を保存中...';
       await saveScore(selectedName, score, avg);
@@ -402,40 +415,9 @@
     }
 
     // --- ランキング表示 ---
-    async function showRanking() {
+    function showRanking() {
       switchScreen('screen-ranking');
-      const list = document.getElementById('ranking-list');
-      list.innerHTML = '<div class="ranking-loading">読み込み中...</div>';
-      try {
-        const records = await fetchRecords();
-        if (records.length === 0) {
-          list.innerHTML = '<div class="ranking-empty">まだ記録がありません</div>';
-          return;
-        }
-        // 各名前のベストスコアを抽出（正答数降順→平均秒数昇順）
-        const bestByName = {};
-        for (const r of records) {
-          const prev = bestByName[r.name];
-          if (!prev || r.score > prev.score || (r.score === prev.score && r.avg < prev.avg)) {
-            bestByName[r.name] = r;
-          }
-        }
-        const sorted = Object.values(bestByName).sort((a,b) =>
-          b.score !== a.score ? b.score - a.score : a.avg - b.avg
-        ).slice(0, 3);
-
-        const medals = ['🥇','🥈','🥉'];
-        list.innerHTML = sorted.map((r, i) => `
-          <div class="ranking-row rank-${i+1}">
-            <span class="rank-medal">${medals[i]}</span>
-            <span class="rank-name">${r.name}</span>
-            <span class="rank-score"><strong>${r.score}/10</strong>　${r.avg.toFixed(2)}秒</span>
-          </div>
-        `).join('');
-      } catch(e) {
-        list.innerHTML = '<div class="ranking-empty">読み込みに失敗しました</div>';
-        console.error(e);
-      }
+      document.getElementById('ranking-list').innerHTML = '<div class="ranking-empty">Coming soon</div>';
     }
 
     function switchScreen(id) {
@@ -448,8 +430,19 @@
       questions = buildQuestions();
       current = 0; score = 0; times = [];
       document.getElementById('score-label').textContent = '正解: 0';
-      switchScreen('screen-quiz');
-      loadQuestion();
+      switchScreen('screen-countdown');
+      let count = 3;
+      document.getElementById('countdown-num').textContent = count;
+      const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          document.getElementById('countdown-num').textContent = count;
+        } else {
+          clearInterval(timer);
+          switchScreen('screen-quiz');
+          loadQuestion();
+        }
+      }, 1000);
     }
 
     function goTitle() {

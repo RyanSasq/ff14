@@ -24,18 +24,38 @@
     /* タイトル画面 */
     .title-box {
       width: 460px; background: #1a2a3a; border: 1px solid #2a3f52;
-      border-radius: 12px; padding: 3rem 2rem; text-align: center; margin-bottom: 1.5rem;
+      border-radius: 12px; padding: 2.5rem 2rem; text-align: center; margin-bottom: 1rem;
     }
-    .title-main { font-size: 28px; font-weight: 500; color: #c8c0f0; letter-spacing: 0.08em; margin-bottom: 1.25rem; }
-    .title-rule { font-size: 14px; color: #8899aa; line-height: 1.7; }
+    .title-main { font-size: 28px; font-weight: 500; color: #c8c0f0; letter-spacing: 0.08em; margin-bottom: 1rem; }
+    .title-rule { font-size: 14px; color: #8899aa; line-height: 1.7; margin-bottom: 1.5rem; }
+    .name-label { font-size: 13px; color: #8899aa; margin-bottom: 0.5rem; text-align: left; }
+    .name-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 0;
+    }
+    .name-btn {
+      padding: 8px 4px; border-radius: 6px; border: 1px solid #334455;
+      background: #0f1923; color: #8899aa; font-size: 14px; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .name-btn:hover { background: #1a2a3a; border-color: #7F77DD; color: #c8c0f0; }
+    .name-btn.selected { background: #2a2060; border-color: #7F77DD; color: #c8c0f0; }
+
     .start-btn {
       width: 460px; padding: 13px;
       border-radius: 8px; border: 1px solid #7F77DD;
       background: #2a2060; color: #c8c0f0;
-      font-size: 16px; cursor: pointer; transition: background 0.15s;
-      letter-spacing: 0.05em;
+      font-size: 16px; cursor: pointer; transition: background 0.15s, opacity 0.15s;
+      letter-spacing: 0.05em; margin-bottom: 0.75rem;
     }
-    .start-btn:hover { background: #35298a; }
+    .start-btn:hover:not(:disabled) { background: #35298a; }
+    .start-btn:disabled { opacity: 0.35; cursor: default; }
+    .ranking-btn {
+      width: 460px; padding: 11px;
+      border-radius: 8px; border: 1px solid #334455;
+      background: #1a2a3a; color: #8899aa;
+      font-size: 15px; cursor: pointer; transition: background 0.15s;
+    }
+    .ranking-btn:hover { background: #243040; color: #c8c0f0; }
 
     /* HUD */
     .hud { width: 460px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
@@ -63,7 +83,7 @@
     .field-container { position: relative; width: 460px; height: 460px; }
     .field-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
     .slot {
-      position: absolute; width: 104px; height: 44px;
+      position: absolute;
       border: 2px solid #556677; border-radius: 6px;
       background: rgba(255,255,255,0.05);
       display: flex; align-items: center; justify-content: center;
@@ -73,8 +93,8 @@
     .slot.correct { background: rgba(99,153,34,0.3); border-color: #7fc44a; }
     .slot.wrong { background: rgba(226,75,74,0.3); border-color: #e24b4a; }
     .slot.answered { cursor: default; pointer-events: none; }
-    .slot-num { font-size: 20px; font-weight: 500; color: #FAC775; }
-    .slot-num-counter { font-size: 20px; font-weight: 500; color: #FAC775; transform: rotate(-90deg); }
+    .slot-num { font-size: 16px; font-weight: 500; color: #FAC775; }
+    .slot-num-counter { font-size: 16px; font-weight: 500; color: #FAC775; transform: rotate(-90deg); }
     .center-dot {
       position: absolute; width: 16px; height: 16px; background: #7F77DD;
       border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%,-50%);
@@ -88,11 +108,14 @@
       border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 1rem;
     }
     .result-title { font-size: 15px; color: #8899aa; margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .result-name { font-size: 14px; color: #c8c0f0; margin-bottom: 0.5rem; }
     .result-score { font-size: 52px; font-weight: 500; color: #7F77DD; }
     .result-sub { font-size: 14px; color: #8899aa; margin-top: 0.25rem; }
     .result-msg { font-size: 16px; color: #e0e0e0; margin-top: 0.75rem; }
     .result-avg { font-size: 14px; color: #8899aa; margin-top: 0.5rem; }
     .result-avg span { font-size: 20px; font-weight: 500; color: #e0e0e0; }
+    .saving-msg { font-size: 13px; color: #556677; margin-top: 0.5rem; min-height: 20px; }
+
     .restart-btn {
       width: 460px; padding: 11px;
       border-radius: 8px; border: 1px solid #334455;
@@ -108,6 +131,34 @@
       font-size: 15px; cursor: pointer; transition: background 0.15s;
     }
     .title-btn:hover { background: #243040; }
+
+    /* ランキング画面 */
+    .ranking-box {
+      width: 460px; background: #1a2a3a; border: 1px solid #2a3f52;
+      border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 1rem;
+    }
+    .ranking-title { font-size: 18px; font-weight: 500; color: #c8c0f0; margin-bottom: 1.5rem; letter-spacing: 0.05em; }
+    .ranking-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem;
+      background: #0f1923; border: 1px solid #2a3f52;
+    }
+    .ranking-row.rank-1 { border-color: #c8a840; background: rgba(200,168,64,0.08); }
+    .ranking-row.rank-2 { border-color: #8899aa; background: rgba(136,153,170,0.08); }
+    .ranking-row.rank-3 { border-color: #a0522d; background: rgba(160,82,45,0.08); }
+    .rank-medal { font-size: 22px; width: 32px; }
+    .rank-name { font-size: 16px; color: #e0e0e0; flex: 1; text-align: left; margin-left: 0.5rem; }
+    .rank-score { font-size: 14px; color: #8899aa; text-align: right; }
+    .rank-score strong { font-size: 16px; color: #c8c0f0; }
+    .ranking-empty { font-size: 14px; color: #556677; padding: 1rem 0; }
+    .ranking-loading { font-size: 14px; color: #556677; padding: 1rem 0; }
+    .back-btn {
+      width: 460px; padding: 11px;
+      border-radius: 8px; border: 1px solid #334455;
+      background: #1a2a3a; color: #8899aa;
+      font-size: 15px; cursor: pointer; transition: background 0.15s;
+    }
+    .back-btn:hover { background: #243040; color: #c8c0f0; }
   </style>
 </head>
 <body>
@@ -117,8 +168,20 @@
     <div class="title-box">
       <div class="title-main">ずびずばテレポ検定</div>
       <div class="title-rule">デバフの矢印を見て、正しい移動先をクリックしよう！</div>
+      <div class="name-label">名前を選んでください</div>
+      <div class="name-grid" id="name-grid">
+        <button class="name-btn" onclick="selectName(this)">おこじょ</button>
+        <button class="name-btn" onclick="selectName(this)">ヴィン</button>
+        <button class="name-btn" onclick="selectName(this)">くろえ</button>
+        <button class="name-btn" onclick="selectName(this)">もともん</button>
+        <button class="name-btn" onclick="selectName(this)">ゆた</button>
+        <button class="name-btn" onclick="selectName(this)">りゃん</button>
+        <button class="name-btn" onclick="selectName(this)">しゃる</button>
+        <button class="name-btn" onclick="selectName(this)">こころ</button>
+      </div>
     </div>
-    <button class="start-btn" onclick="beginQuiz()">テストを始める</button>
+    <button class="start-btn" id="start-btn" onclick="beginQuiz()" disabled>テストを始める</button>
+    <button class="ranking-btn" onclick="showRanking()">ランキング 🏆</button>
   </div>
 
   <!-- クイズ画面 -->
@@ -144,19 +207,23 @@
         <circle cx="230" cy="230" r="195" fill="#1a2a3a" stroke="#2a3f52" stroke-width="2"/>
       </svg>
 
-      <div class="compass" style="top:8px; left:50%; transform:translateX(-50%);">N</div>
-      <div class="compass" style="bottom:8px; left:50%; transform:translateX(-50%);">S</div>
-      <div class="compass" style="right:8px; top:50%; transform:translateY(-50%);">E</div>
-      <div class="compass" style="left:8px; top:50%; transform:translateY(-50%);">W</div>
+      <div class="compass" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:16px; font-weight:500; color:#8899aa;">N</div>
+      <div class="compass" style="position:absolute; bottom:8px; left:50%; transform:translateX(-50%); font-size:16px; font-weight:500; color:#8899aa;">S</div>
+      <div class="compass" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:16px; font-weight:500; color:#8899aa;">E</div>
+      <div class="compass" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:16px; font-weight:500; color:#8899aa;">W</div>
 
-      <div class="slot" id="slot-1" data-num="1" style="top:94px; left:115px; transform:rotate(90deg);"><span class="slot-num-counter">1</span></div>
-      <div class="slot" id="slot-2" data-num="2" style="top:94px; left:178px; transform:rotate(90deg);"><span class="slot-num-counter">2</span></div>
-      <div class="slot" id="slot-3" data-num="3" style="top:145px; left:292px;"><span class="slot-num">3</span></div>
-      <div class="slot" id="slot-4" data-num="4" style="top:208px; left:292px;"><span class="slot-num">4</span></div>
-      <div class="slot" id="slot-5" data-num="5" style="top:322px; left:241px; transform:rotate(90deg);"><span class="slot-num-counter">5</span></div>
-      <div class="slot" id="slot-6" data-num="6" style="top:322px; left:178px; transform:rotate(90deg);"><span class="slot-num-counter">6</span></div>
-      <div class="slot" id="slot-7" data-num="7" style="top:271px; left:64px;"><span class="slot-num">7</span></div>
-      <div class="slot" id="slot-8" data-num="8" style="top:208px; left:64px;"><span class="slot-num">8</span></div>
+      <!-- NW: 1,2 (縦向き) -->
+      <div class="slot" id="slot-1" data-num="1" style="width:92px; height:38px; top:119px; left:65px; transform:rotate(90deg);"><span class="slot-num-counter">1</span></div>
+      <div class="slot" id="slot-2" data-num="2" style="width:92px; height:38px; top:119px; left:119px; transform:rotate(90deg);"><span class="slot-num-counter">2</span></div>
+      <!-- NE: 3,4 (横向き) -->
+      <div class="slot" id="slot-3" data-num="3" style="width:92px; height:38px; top:92px; left:276px;"><span class="slot-num">3</span></div>
+      <div class="slot" id="slot-4" data-num="4" style="width:92px; height:38px; top:146px; left:276px;"><span class="slot-num">4</span></div>
+      <!-- SE: 5,6 (縦向き) -->
+      <div class="slot" id="slot-5" data-num="5" style="width:92px; height:38px; top:303px; left:303px; transform:rotate(90deg);"><span class="slot-num-counter">5</span></div>
+      <div class="slot" id="slot-6" data-num="6" style="width:92px; height:38px; top:303px; left:249px; transform:rotate(90deg);"><span class="slot-num-counter">6</span></div>
+      <!-- SW: 7,8 (横向き) -->
+      <div class="slot" id="slot-7" data-num="7" style="width:92px; height:38px; top:276px; left:92px;"><span class="slot-num">7</span></div>
+      <div class="slot" id="slot-8" data-num="8" style="width:92px; height:38px; top:330px; left:92px;"><span class="slot-num">8</span></div>
 
       <div class="center-dot"></div>
     </div>
@@ -166,26 +233,57 @@
   <div id="screen-result" class="screen">
     <div class="result-box">
       <div class="result-title">ずびずばテレポ検定　結果</div>
+      <div class="result-name" id="result-name"></div>
       <div class="result-score" id="result-score">0 / 10</div>
       <div class="result-sub">正解数</div>
       <div class="result-msg" id="result-msg"></div>
       <div class="result-avg">平均回答時間: <span id="result-avg">0.00</span> 秒</div>
+      <div class="saving-msg" id="saving-msg"></div>
     </div>
     <button class="restart-btn" onclick="beginQuiz()">もう一度挑戦する</button>
     <button class="title-btn" onclick="goTitle()">タイトルに戻る</button>
   </div>
 
+  <!-- ランキング画面 -->
+  <div id="screen-ranking" class="screen">
+    <div class="ranking-box">
+      <div class="ranking-title">🏆 ランキング</div>
+      <div id="ranking-list"></div>
+    </div>
+    <button class="back-btn" onclick="goTitle()">← タイトルに戻る</button>
+  </div>
+
   <script>
+    // ======================================================
+    // ★ここを自分のJSONBin Secret Keyに書き換えてください★
+    const JSONBIN_API_KEY = '$2a$10$bqyYAUxYpb513D2505wcQ.nGJDxRIrhh0UricImvIOQJnIqDr.aEC';
+    // ★ここを最初の実行後に発行されるBin IDに書き換えてください★
+    // （初回実行時に自動作成されます。コンソールにIDが表示されます）
+    let JSONBIN_BIN_ID = 'YOUR_BIN_ID';
+    // ======================================================
+
+    const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+
     const ANSWERS = {
       1: '↓↓', 2: '←↑', 3: '←←', 4: '↑→',
-      5: '↑↑', 6: '→↓', 7: '→→', 8: '↓←'
+      5: '↑↑', 6: '→↓', 7: '↓←', 8: '→→'
     };
     const PATTERNS = ['↑↑','↓↓','←←','→→','↑→','→↓','↓←','←↑'];
 
     let questions = [], current = 0, score = 0;
     let questionStart = 0, times = [];
     let autoTimer = null;
+    let selectedName = '';
 
+    // --- 名前選択 ---
+    function selectName(btn) {
+      document.querySelectorAll('.name-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedName = btn.textContent;
+      document.getElementById('start-btn').disabled = false;
+    }
+
+    // --- シャッフル ---
     function shuffle(arr) {
       const a = [...arr];
       for (let i = a.length-1; i > 0; i--) {
@@ -195,12 +293,11 @@
       return a;
     }
 
+    // --- 問題生成（連続同一パターンなし） ---
     function buildQuestions() {
       let result = shuffle([...shuffle(PATTERNS), ...shuffle(PATTERNS).slice(0,2)]);
-      // 2問連続で同じパターンが来ないように並び替え
       for (let i = 1; i < result.length; i++) {
         if (result[i] === result[i-1]) {
-          // 同じなら後ろから異なる要素を探して交換
           let swapped = false;
           for (let j = i+1; j < result.length; j++) {
             if (result[j] !== result[i-1] && (j+1 >= result.length || result[j] !== result[i])) {
@@ -209,7 +306,6 @@
               break;
             }
           }
-          // 交換できなかった場合は前と入れ替え
           if (!swapped && i >= 2 && result[i-2] !== result[i]) {
             [result[i], result[i-2]] = [result[i-2], result[i]];
           }
@@ -226,8 +322,7 @@
 
     function resetSlots() {
       for (let i = 1; i <= 8; i++) {
-        const s = document.getElementById('slot-' + i);
-        s.classList.remove('correct', 'wrong', 'answered');
+        document.getElementById('slot-' + i).classList.remove('correct', 'wrong', 'answered');
       }
     }
 
@@ -245,20 +340,102 @@
 
     function nextQuestion() {
       current++;
-      if (current >= 10) {
-        showResult();
-      } else {
-        loadQuestion();
-      }
+      if (current >= 10) showResult();
+      else loadQuestion();
     }
 
-    function showResult() {
+    // --- 結果表示 & スコア保存 ---
+    async function showResult() {
       switchScreen('screen-result');
-      document.getElementById('result-score').textContent = `${score} / 10`;
       const avg = times.reduce((a,b) => a+b, 0) / times.length;
+      document.getElementById('result-name').textContent = selectedName;
+      document.getElementById('result-score').textContent = `${score} / 10`;
       document.getElementById('result-avg').textContent = avg.toFixed(2);
       const msgs = ['もう少し練習しましょう！', 'いい調子です！', 'よくできました！', '完璧です！'];
       document.getElementById('result-msg').textContent = msgs[score <= 4 ? 0 : score <= 6 ? 1 : score <= 9 ? 2 : 3];
+
+      document.getElementById('saving-msg').textContent = '記録を保存中...';
+      await saveScore(selectedName, score, avg);
+    }
+
+    // --- JSONBin: スコア保存 ---
+    async function saveScore(name, sc, avg) {
+      try {
+        let records = await fetchRecords();
+        records.push({ name, score: sc, avg: parseFloat(avg.toFixed(2)), date: new Date().toISOString() });
+        await putRecords(records);
+        document.getElementById('saving-msg').textContent = '✓ 記録を保存しました';
+      } catch(e) {
+        document.getElementById('saving-msg').textContent = '※ 記録の保存に失敗しました';
+        console.error(e);
+      }
+    }
+
+    // --- JSONBin: 全レコード取得 ---
+    async function fetchRecords() {
+      if (JSONBIN_BIN_ID === 'YOUR_BIN_ID') {
+        // Bin未作成 → 新規作成
+        const res = await fetch(`${JSONBIN_BASE}/b`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY, 'X-Bin-Name': 'zubizyba-scores', 'X-Bin-Private': 'false' },
+          body: JSON.stringify([])
+        });
+        const data = await res.json();
+        JSONBIN_BIN_ID = data.metadata.id;
+        console.log('BIN IDが発行されました。index.htmlのYOUR_BIN_IDをこの値に書き換えてください:', JSONBIN_BIN_ID);
+        return [];
+      }
+      const res = await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': JSONBIN_API_KEY }
+      });
+      const data = await res.json();
+      return Array.isArray(data.record) ? data.record : [];
+    }
+
+    // --- JSONBin: レコード更新 ---
+    async function putRecords(records) {
+      await fetch(`${JSONBIN_BASE}/b/${JSONBIN_BIN_ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+        body: JSON.stringify(records)
+      });
+    }
+
+    // --- ランキング表示 ---
+    async function showRanking() {
+      switchScreen('screen-ranking');
+      const list = document.getElementById('ranking-list');
+      list.innerHTML = '<div class="ranking-loading">読み込み中...</div>';
+      try {
+        const records = await fetchRecords();
+        if (records.length === 0) {
+          list.innerHTML = '<div class="ranking-empty">まだ記録がありません</div>';
+          return;
+        }
+        // 各名前のベストスコアを抽出（正答数降順→平均秒数昇順）
+        const bestByName = {};
+        for (const r of records) {
+          const prev = bestByName[r.name];
+          if (!prev || r.score > prev.score || (r.score === prev.score && r.avg < prev.avg)) {
+            bestByName[r.name] = r;
+          }
+        }
+        const sorted = Object.values(bestByName).sort((a,b) =>
+          b.score !== a.score ? b.score - a.score : a.avg - b.avg
+        ).slice(0, 3);
+
+        const medals = ['🥇','🥈','🥉'];
+        list.innerHTML = sorted.map((r, i) => `
+          <div class="ranking-row rank-${i+1}">
+            <span class="rank-medal">${medals[i]}</span>
+            <span class="rank-name">${r.name}</span>
+            <span class="rank-score"><strong>${r.score}/10</strong>　${r.avg.toFixed(2)}秒</span>
+          </div>
+        `).join('');
+      } catch(e) {
+        list.innerHTML = '<div class="ranking-empty">読み込みに失敗しました</div>';
+        console.error(e);
+      }
     }
 
     function switchScreen(id) {
@@ -267,6 +444,7 @@
     }
 
     function beginQuiz() {
+      if (!selectedName) return;
       questions = buildQuestions();
       current = 0; score = 0; times = [];
       document.getElementById('score-label').textContent = '正解: 0';
